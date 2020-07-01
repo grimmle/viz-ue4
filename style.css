@@ -1,0 +1,23 @@
+* {
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.links line {
+    stroke: rgba(27, 40, 41, 0.8);
+}
+
+.nodes circle {
+    stroke: #fff;
+    stroke-width: 0.8px;
+}
+
+text {
+    font-family: sans-serif;
+    font-size: 10px;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+}
