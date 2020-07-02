@@ -12,7 +12,7 @@ d3.json("data.json", function (error, graph) {
         .nodes(graph.nodes)
         .force("link", d3.forceLink(graph.links).distance(50))
         .force("charge", d3.forceManyBody().strength(-50))
-        .force("center", d3.forceCenter(width / 2, height / 2));        
+        .force("center", d3.forceCenter(width / 2, height / 2));
 
     simulation
         .on("tick", ticked)
@@ -35,16 +35,17 @@ d3.json("data.json", function (error, graph) {
         .selectAll("g")
         .data(graph.nodes)
         .enter().append("g")
+        .attr("cursor", "grab")
 
     var circles = node.append("circle")
         .attr("r", (d) => getRadius(d.id))
         .attr("fill", nodeColor)
         .attr("class", function (d) {return d.name.toLowerCase()})
-
+        
     var labels = node.append("text")
         .text(function (d) { return d.name; })
         .style("text-anchor", "middle")
-        .attr('y', 3);
+        .attr('y', 3)
 
     // hover name
     node.append("title")
