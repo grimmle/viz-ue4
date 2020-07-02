@@ -1,6 +1,6 @@
 let nodeColor = "rgba(82, 186, 162, 0.95)";
-let highlightColor = "rgba(150, 0, 0,0.95)";
-let linkColor = "rgba(27, 40, 41, 0.8)";
+let highlightColor = "rgba(186, 82, 106, 0.95)";
+let linkColor = "rgba(77, 70, 51, 0.8)";
 
 var svg = d3.select("svg"),
     width = +svg.attr("width"),
@@ -10,8 +10,8 @@ d3.json("data.json", function (error, graph) {
     if (error) throw error;
     var simulation = d3.forceSimulation()
         .nodes(graph.nodes)
-        .force("link", d3.forceLink(graph.links).distance(70))
-        .force("charge", d3.forceManyBody().strength(-100))
+        .force("link", d3.forceLink(graph.links).distance(50))
+        .force("charge", d3.forceManyBody().strength(-50))
         .force("center", d3.forceCenter(width / 2, height / 2));        
 
     simulation
@@ -19,9 +19,8 @@ d3.json("data.json", function (error, graph) {
         .force("link")
         .links(graph.links)
 
+    // group for everything, needed for zoom
     var g = svg.append("g")
-        .attr("class", "everything");
-
 
     var link = g.append("g")
         .attr("class", "links")
@@ -42,9 +41,16 @@ d3.json("data.json", function (error, graph) {
         .attr("fill", nodeColor)
         .attr("class", function (d) {return d.name.toLowerCase()})
 
+    var labels = node.append("text")
+        .text(function (d) { return d.name; })
+        .style("text-anchor", "middle")
+        .attr('y', 3);
+
+    // hover name
     node.append("title")
         .text(function (d) { return d.name; });
 
+    
     var handleDrag = d3.drag()
         .on("start", dragstarted)
         .on("drag", dragged)
@@ -53,21 +59,13 @@ d3.json("data.json", function (error, graph) {
     handleDrag(node);
     
     var handleZoom = d3.zoom()
-        .on("zoom", zoom_actions);
+        .on("zoom", zoom);
 
     handleZoom(svg);
 
-    function zoom_actions() {
+    function zoom() {
         g.attr("transform", d3.event.transform)
     }
-
-    var lables = node.append("text")
-        .text(function (d) {return d.name;})
-        .style("text-anchor", "middle")
-
-    node.append("title")
-        .text(function (d) { return d.id; });
-
     
     function ticked() {
         link
@@ -100,12 +98,13 @@ d3.json("data.json", function (error, graph) {
         d.fy = null;
     }
 
+    // calc radius for a specific node
     function getRadius(id) {
         let radius = 8;
         let links = graph.links.filter((link) => parseInt(link.source.id) == id);
         
         links.forEach(link => {
-            //take multiple connections into account?
+            //take multiple connections (weight) into account?
             //radius += link.weight
             radius += 1
         });
@@ -114,8 +113,10 @@ d3.json("data.json", function (error, graph) {
 });
 
 function search() {
-    let query = document.getElementById("search").value;
+    let query = document.getElementById("search").value.toLowerCase().trim();
     console.log(query)
-    d3.select("." + query)
-        .attr("fill", highlightColor)
+    if(query) {
+        d3.select("." + query)
+            .attr("fill", highlightColor)
+    }
 }
